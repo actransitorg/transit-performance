@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Configuration;
-
+using System.Linq;
 using IBI.DataAccess.Models;
 
 namespace gtfsrt_tripupdate_denormalized.DataAccess
@@ -12,8 +12,9 @@ namespace gtfsrt_tripupdate_denormalized.DataAccess
         internal void SaveTripUpdates(List<TripUpdateData> tripUpdates)
         {
             var dataTable = new GtfsRtTripUpdateDenormalizedDataTable();
+			var canceled = tripUpdates.Where(x => x.TripScheduleRelationship == "Canceled").ToList();
 
-            foreach (var tripUpdate in tripUpdates)
+			foreach (var tripUpdate in tripUpdates)
             {
                 var newRow = dataTable.NewGtfsRtTripUpdateDenormalizedRow();
 

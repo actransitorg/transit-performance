@@ -18,7 +18,7 @@ namespace GTFS
 
                 Log.Info("\n\nGTFS schedule update program start.");
 
-                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
                 Log.Info($"Enabled Protocols: {ServicePointManager.SecurityProtocol}");
 
                 var gtfsUpdate = new GTFSUpdate();

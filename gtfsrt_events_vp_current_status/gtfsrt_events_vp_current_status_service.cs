@@ -30,7 +30,7 @@ namespace gtfsrt_events_vp_current_status
                 XmlConfigurator.Configure();
                 Log.Info("Start");
 
-                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
                 Log.Info($"Enabled Protocols: {ServicePointManager.SecurityProtocol}");
 
                 var eventQueue = new EventQueue(Log);

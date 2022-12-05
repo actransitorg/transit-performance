@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Configuration;
+//using System.Configuration;
 using System.IO;
 using System.Net;
 using System.Threading;
@@ -16,31 +16,45 @@ namespace GtfsRealtimeLib
 {
     public delegate void NewFeedMessageEventHandler(FeedMessage feedMessage);
 
+	public class GtfsConfig {
+		public string FilePath { get; set; }
+		public string JsonPath { get; set; }
+		public string Url { get; set; }
+		public string Frequency { get; set; }
+	}
+
     public class GtfsData
     {
         private readonly ILog Log;
         private ulong FileTimestamp;
 
-        public static readonly string FILEPATH = ConfigurationManager.AppSettings["FILEPATH"];
-        public static readonly string JSONPATH = ConfigurationManager.AppSettings["JSONPATH"];
-        public static readonly string URL = ConfigurationManager.AppSettings["URL"];
-        public static readonly string FREQUENCY = ConfigurationManager.AppSettings["FREQUENCY"];
+		public static string FILEPATH;
+
+		public static string JSONPATH;
+
+		public static string URL;
+
+		public static string FREQUENCY;
         //public static string ACCEPTROUTE = ConfigurationManager.AppSettings["ACCEPTROUTE"];
         //public static string PERIOD_END_CHANGE_SECONDS = ConfigurationManager.AppSettings["PERIOD_END_CHANGE_SECONDS"];
 
         public event NewFeedMessageEventHandler NewFeedMessage;
 
-        public GtfsData(ILog log)
+        public GtfsData(ILog log, GtfsConfig gtfsConfig)
         {
             Log = log;
-        }
+			FILEPATH = gtfsConfig.FilePath;
+			JSONPATH = gtfsConfig.JsonPath;
+			URL = gtfsConfig.Url;
+			FREQUENCY = gtfsConfig.Frequency;
+		}
 
         public void GetData()
         {
             var cycleTime = GetCycleTime();
             // Above part is executed only once when thread is started.
 
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
             while (true)
             {

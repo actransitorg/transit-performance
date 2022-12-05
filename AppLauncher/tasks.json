@@ -4,34 +4,33 @@
     "Database": "transit_performance"
   },
   "Tasks": [
-    /*{
-      "Name": "\\\\webtest07\\e$\\Projects\\TransitPerformance\\GTFSUpdate\\GTFS.exe",
-      "Location": "\\\\webtest07\\e$\\Projects\\TransitPerformance\\GTFSUpdate",
+    {
+      "Name": "\\\\azapptest09\\c$\\Projects\\TransitPerformance\\GTFSUpdate\\GTFS.exe",
+      "Location": "\\\\azapptest09\\c$\\Projects\\TransitPerformance\\GTFSUpdate",
       "TaskType": "Executable",
       "Order": 1,
       "Enable": "True"
     },
     {
-      "Name": "\\\\webtest07\\e$\\Projects\\TransitPerformance\\ConfigUpdate\\ConfigUpdate.exe",
-      "Location": "\\\\webtest07\\e$\\Projects\\TransitPerformance\\ConfigUpdate",
+      "Name": "\\\\azapptest09\\c$\\Projects\\TransitPerformance\\ConfigUpdate\\ConfigUpdate.exe",
+      "Location": "\\\\azapptest09\\c$\\Projects\\TransitPerformance\\ConfigUpdate",
       "TaskType": "Executable",
       "Order": 2,
       "Enable": "True"
-    },*/
-    //{
-    //  "Name": "dbo.PreProcessDaily",
-    //  "TaskType": "StoredProcedure",
-    //  "Order": 3,
-    //  "Enable": "True",
-    //  "Arguments": [
-    //    {
-    //      "Name": "service_date ",
-    //      "Value": "Yesterday",
-    //      "Datatype": "date"
-    //    }
-    //  ]
-    //}
-    //,
+    },
+    {
+      "Name": "dbo.PreProcessDaily",
+      "TaskType": "StoredProcedure",
+      "Order": 3,
+      "Enable": "True",
+      "Arguments": [
+        {
+          "Name": "service_date ",
+          "Value": "Yesterday",
+          "Datatype": "date"
+        }
+      ]
+    },
     {
       "Name": "dbo.PostProcessDaily",
       "TaskType": "StoredProcedure",
@@ -44,56 +43,53 @@
           "Datatype": "date"
         }
       ]
+    },
+    {
+      "Name": "dbo.ProcessPredictionAccuracyDaily",
+      "TaskType": "StoredProcedure",
+      "Order": 5,
+      "Enable": "True",
+      "Arguments": [
+        {
+          "Name": "service_date ",
+          "Value": "Yesterday",
+          "Datatype": "date"
+        }
+      ]
+    },
+    {
+      "Name": "dbo.PreProcessToday",
+      "TaskType": "StoredProcedure",
+      "Order": 6,
+      "Enable": "True",
+      "Arguments": [
+        {
+          "Name": "service_date ",
+          "Value": "Today",
+          "Datatype": "date"
+        }
+      ]
+    }, 
+    {
+      "Name": "dbo.CreateTodayRTProcess",
+      "TaskType": "StoredProcedure",
+      "Order": 7,
+      "Enable": "True",
+      "Arguments": []
     }
-    //,
-    //{
-    //  "Name": "dbo.ProcessPredictionAccuracyDaily",
-    //  "TaskType": "StoredProcedure",
-    //  "Order": 5,
-    //  "Enable": "True",
-    //  "Arguments": [
-    //    {
-    //      "Name": "service_date ",
-    //      "Value": "Yesterday",
-    //      "Datatype": "date"
-    //    }
-    //  ]
-    //}//,
-    //{
-    //  "Name": "dbo.PreProcessToday",
-    //  "TaskType": "StoredProcedure",
-    //  "Order": 6,
-    //  "Enable": "True",
-    //  "Arguments": [
-    //    {
-    //      "Name": "service_date ",
-    //      "Value": "Today",
-    //      "Datatype": "date"
-    //    }
-    //  ]
-    //}
-    //,    
-    //{
-    //  "Name": "dbo.CreateTodayRTProcess",
-    //  "TaskType": "StoredProcedure",
-    //  "Order": 7,
-    //  "Enable": "True",
-    //  "Arguments": []
-    //}
-    //,
-    //{
-    //  "Name": "dbo.ClearData",
-    //  "TaskType": "StoredProcedure",
-    //  "Order": 8,
-    //  "Enable": "True",
-    //  "Arguments": [
-    //    {
-    //      "Name": "number_of_days",
-    //      "Value": 5,
-    //      "Datatype": "integer"
-    //    }
-    //  ]
-    //}
-
+	,
+    {
+     "Name": "dbo.ClearData",
+      "TaskType": "StoredProcedure",
+      "Order": 8,
+      "Enable": "True",
+      "Arguments": [
+        {
+         "Name": "number_of_days",
+         "Value": 5,
+         "Datatype": "integer"
+        }
+      ]
+    }
   ]
 }

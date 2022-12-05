@@ -38,12 +38,18 @@ namespace gtfsrt_tripupdate_denormalized
                 XmlConfigurator.Configure();
                 Log.Info("Program started");
 
-                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
                 Log.Info($"Enabled Protocols: {ServicePointManager.SecurityProtocol}");
 
                 Thread.Sleep(1000);
 
-                var data = new GtfsData(Log);
+                var data = new GtfsData(Log, 
+					new GtfsConfig {
+						FilePath = ConfigurationManager.AppSettings["FILEPATH"],
+						JsonPath = ConfigurationManager.AppSettings["JSONPATH"],
+						Url = ConfigurationManager.AppSettings["URL"],
+						Frequency = ConfigurationManager.AppSettings["FREQUENCY"]
+					});
                 data.NewFeedMessage += Data_NewFeedMessage;
 
                 var feedMessageThread = new Thread(data.GetData);
@@ -65,41 +71,70 @@ namespace gtfsrt_tripupdate_denormalized
             var tripUpdates = new List<TripUpdateData>();
             var currentDatetime = DateTime.Now;
             var date = currentDatetime.ToString("MM-dd-yyyy");
-            foreach (var entity in feedMessage.Entities.Where(x => !AcceptedRoutes.Any() || (!string.IsNullOrEmpty(x.TripUpdate?.Trip?.RouteId) &&
+			var tv = feedMessage.Entities.Where(x => x.TripUpdate?.Trip?.schedule_relationship == TripDescriptor.ScheduleRelationship.Canceled).ToList();
+			foreach (var entity in feedMessage.Entities.Where(x => !AcceptedRoutes.Any() || (!string.IsNullOrEmpty(x.TripUpdate?.Trip?.RouteId) &&
                                                                  AcceptedRoutes.Contains(x.TripUpdate?.Trip?.RouteId))))
             {
-                tripUpdates.AddRange(entity.TripUpdate.StopTimeUpdates
-                                           .Select(stopTimeUpdate => new TripUpdateData
-                                                                     {
-                                                                         GtfsRealtimeVersion = feedMessage.Header.GtfsRealtimeVersion,
-                                                                         Incrementality = feedMessage.Header.incrementality.ToString(),
-                                                                         HeaderTimestamp = feedMessage.Header.Timestamp,
-                                                                         FeedEntityId = entity.Id,
-                                                                         VehicleTimestamp = entity.TripUpdate?.Timestamp,
-                                                                         //TripDelay = ..., TripDelay not applicable
-                                                                         TripId = entity.TripUpdate?.Trip?.TripId,
-                                                                         TripStartDate = currentDatetime.ToString("yyyyMMdd"),//entity.trip_update?.trip?.start_date,
-                                                                         TripStartTime = currentDatetime.ToString("HH:mm:ss"),//entity.trip_update?.trip?.start_time,
-                                                                         RouteId = entity.TripUpdate?.Trip?.RouteId,
-                                                                         DirectionId = entity.TripUpdate?.Trip?.DirectionId,
-                                                                         TripScheduleRelationship =
-                                                                             entity.TripUpdate?.Trip?.schedule_relationship.ToString(),
-                                                                         StopSequence = stopTimeUpdate.StopSequence,
-                                                                         StopId = stopTimeUpdate.StopId,
-                                                                         StopScheduleRelationship = stopTimeUpdate.schedule_relationship.ToString(),
-                                                                         PredictedArrivalTime = stopTimeUpdate.Arrival?.Time,
-                                                                         PredictedArrivalDelay = stopTimeUpdate.Arrival?.Delay,
-                                                                         PredictedArrivalUncertainty = stopTimeUpdate.Arrival?.Uncertainty,
-                                                                         PredictedDepartureTime = stopTimeUpdate.Departure?.Time,
-                                                                         PredictedDepartureDelay = stopTimeUpdate.Departure?.Delay,
-                                                                         PredictedDepartureUncertainty = stopTimeUpdate.Departure?.Uncertainty,
-                                                                         VehicleId = entity.TripUpdate?.Vehicle?.Id,
-                                                                         VehicleLabel = entity.TripUpdate?.Vehicle?.Label,
-                                                                         VehicleLicensePlate = entity.TripUpdate?.Vehicle?.LicensePlate
-                                                                     }));
-            }
-
-            InsertTripUpdatesRows(tripUpdates);
+				var tripScheduleRelationship = entity.TripUpdate?.Trip?.schedule_relationship.ToString();
+				var isCanceled = tripScheduleRelationship == TripDescriptor.ScheduleRelationship.Canceled.ToString();
+				if (isCanceled) {
+					tripUpdates.Add(new TripUpdateData {
+						GtfsRealtimeVersion = feedMessage.Header.GtfsRealtimeVersion,
+						Incrementality = feedMessage.Header.incrementality.ToString(),
+						HeaderTimestamp = feedMessage.Header.Timestamp,
+						FeedEntityId = entity.Id,
+						VehicleTimestamp = entity.TripUpdate?.Timestamp,
+						//TripDelay = ..., TripDelay not applicable
+						TripId = entity.TripUpdate?.Trip?.TripId,
+						TripStartDate = currentDatetime.ToString("yyyyMMdd"),//entity.trip_update?.trip?.start_date,
+						TripStartTime = currentDatetime.ToString("HH:mm:ss"),//entity.trip_update?.trip?.start_time,
+						RouteId = entity.TripUpdate?.Trip?.RouteId,
+						DirectionId = entity.TripUpdate?.Trip?.DirectionId,
+						TripScheduleRelationship = tripScheduleRelationship,
+						StopSequence = 0,
+						StopId = string.Empty,
+						StopScheduleRelationship = null,
+						PredictedArrivalTime = 0,
+						PredictedArrivalDelay = 0,
+						PredictedArrivalUncertainty = 0,
+						PredictedDepartureTime = 0,
+						PredictedDepartureDelay = 0,
+						PredictedDepartureUncertainty = 0,
+						VehicleId = entity.TripUpdate?.Vehicle?.Id,
+						VehicleLabel = entity.TripUpdate?.Vehicle?.Label,
+						VehicleLicensePlate = entity.TripUpdate?.Vehicle?.LicensePlate
+					});
+				} else {
+					tripUpdates.AddRange(entity.TripUpdate.StopTimeUpdates
+						.Select(stopTimeUpdate => new TripUpdateData {
+							GtfsRealtimeVersion = feedMessage.Header.GtfsRealtimeVersion,
+							Incrementality = feedMessage.Header.incrementality.ToString(),
+							HeaderTimestamp = feedMessage.Header.Timestamp,
+							FeedEntityId = entity.Id,
+							VehicleTimestamp = entity.TripUpdate?.Timestamp,
+							//TripDelay = ..., TripDelay not applicable
+							TripId = entity.TripUpdate?.Trip?.TripId,
+							TripStartDate = currentDatetime.ToString("yyyyMMdd"),//entity.trip_update?.trip?.start_date,
+							TripStartTime = currentDatetime.ToString("HH:mm:ss"),//entity.trip_update?.trip?.start_time,
+							RouteId = entity.TripUpdate?.Trip?.RouteId,
+							DirectionId = entity.TripUpdate?.Trip?.DirectionId,
+							TripScheduleRelationship = tripScheduleRelationship,
+							StopSequence = stopTimeUpdate.StopSequence,
+							StopId = stopTimeUpdate.StopId,
+							StopScheduleRelationship = stopTimeUpdate.schedule_relationship.ToString(),
+							PredictedArrivalTime = stopTimeUpdate.Arrival?.Time,
+							PredictedArrivalDelay = stopTimeUpdate.Arrival?.Delay,
+							PredictedArrivalUncertainty = stopTimeUpdate.Arrival?.Uncertainty,
+							PredictedDepartureTime = stopTimeUpdate.Departure?.Time,
+							PredictedDepartureDelay = stopTimeUpdate.Departure?.Delay,
+							PredictedDepartureUncertainty = stopTimeUpdate.Departure?.Uncertainty,
+							VehicleId = entity.TripUpdate?.Vehicle?.Id,
+							VehicleLabel = entity.TripUpdate?.Vehicle?.Label,
+							VehicleLicensePlate = entity.TripUpdate?.Vehicle?.LicensePlate
+						}));
+				}
+			}
+			InsertTripUpdatesRows(tripUpdates);
         }
 
         public void Stop()

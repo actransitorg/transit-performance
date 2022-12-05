@@ -35,12 +35,18 @@ namespace gtfsrt_vehicleposition_denormalized
                 XmlConfigurator.Configure();
                 Log.Info("Program started");
 
-                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
                 Log.Info($"Enabled Protocols: {ServicePointManager.SecurityProtocol}");
 
                 Thread.Sleep(1000);
 
-                var data = new GtfsData(Log);
+                var data = new GtfsData(Log,
+					new GtfsConfig {
+						FilePath = ConfigurationManager.AppSettings["FILEPATH"],
+						JsonPath = ConfigurationManager.AppSettings["JSONPATH"],
+						Url = ConfigurationManager.AppSettings["URL"],
+						Frequency = ConfigurationManager.AppSettings["FREQUENCY"]
+					});
                 data.NewFeedMessage += Data_NewFeedMessage;
 
                 var feedMessageThread = new Thread(data.GetData);

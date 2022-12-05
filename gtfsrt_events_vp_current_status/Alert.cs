@@ -2,9 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 
-using GtfsRealtimeLib;
+using log4net;
+
+using Newtonsoft.Json;
 
 using ProtoBuf;
+
+using TransitRealtime;
 
 namespace gtfsrt_events_vp_current_status
 {
@@ -74,40 +78,40 @@ namespace gtfsrt_events_vp_current_status
         public enum Cause
         {
 
-            [ProtoEnum(Name = @"UNKNOWN_CAUSE", Value = 1)]
+            [ProtoEnum(Name = @"UNKNOWN_CAUSE")]//, Value = 1)]
             UNKNOWN_CAUSE = 1,
 
-            [ProtoEnum(Name = @"OTHER_CAUSE", Value = 2)]
+            [ProtoEnum(Name = @"OTHER_CAUSE")]//, Value = 2)]
             OTHER_CAUSE = 2,
 
-            [ProtoEnum(Name = @"TECHNICAL_PROBLEM", Value = 3)]
+            [ProtoEnum(Name = @"TECHNICAL_PROBLEM")]//, Value = 3)]
             TECHNICAL_PROBLEM = 3,
 
-            [ProtoEnum(Name = @"STRIKE", Value = 4)]
+            [ProtoEnum(Name = @"STRIKE")]//, Value = 4)]
             STRIKE = 4,
 
-            [ProtoEnum(Name = @"DEMONSTRATION", Value = 5)]
+            [ProtoEnum(Name = @"DEMONSTRATION")]//, Value = 5)]
             DEMONSTRATION = 5,
 
-            [ProtoEnum(Name = @"ACCIDENT", Value = 6)]
+            [ProtoEnum(Name = @"ACCIDENT")]//, Value = 6)]
             ACCIDENT = 6,
 
-            [ProtoEnum(Name = @"HOLIDAY", Value = 7)]
+            [ProtoEnum(Name = @"HOLIDAY")]//, Value = 7)]
             HOLIDAY = 7,
 
-            [ProtoEnum(Name = @"WEATHER", Value = 8)]
+            [ProtoEnum(Name = @"WEATHER")]//, Value = 8)]
             WEATHER = 8,
 
-            [ProtoEnum(Name = @"MAINTENANCE", Value = 9)]
+            [ProtoEnum(Name = @"MAINTENANCE")]//, Value = 9)]
             MAINTENANCE = 9,
 
-            [ProtoEnum(Name = @"CONSTRUCTION", Value = 10)]
+            [ProtoEnum(Name = @"CONSTRUCTION")]//, Value = 10)]
             CONSTRUCTION = 10,
 
-            [ProtoEnum(Name = @"POLICE_ACTIVITY", Value = 11)]
+            [ProtoEnum(Name = @"POLICE_ACTIVITY")]//, Value = 11)]
             POLICE_ACTIVITY = 11,
 
-            [ProtoEnum(Name = @"MEDICAL_EMERGENCY", Value = 12)]
+            [ProtoEnum(Name = @"MEDICAL_EMERGENCY")]//, Value = 12)]
             MEDICAL_EMERGENCY = 12
         }
 
@@ -115,31 +119,31 @@ namespace gtfsrt_events_vp_current_status
         public enum Effect
         {
 
-            [ProtoEnum(Name = @"NO_SERVICE", Value = 1)]
+            [ProtoEnum(Name = @"NO_SERVICE")]//, Value = 1)]
             NO_SERVICE = 1,
 
-            [ProtoEnum(Name = @"REDUCED_SERVICE", Value = 2)]
+            [ProtoEnum(Name = @"REDUCED_SERVICE")]//, Value = 2)]
             REDUCED_SERVICE = 2,
 
-            [ProtoEnum(Name = @"SIGNIFICANT_DELAYS", Value = 3)]
+            [ProtoEnum(Name = @"SIGNIFICANT_DELAYS")]//, Value = 3)]
             SIGNIFICANT_DELAYS = 3,
 
-            [ProtoEnum(Name = @"DETOUR", Value = 4)]
+            [ProtoEnum(Name = @"DETOUR")]//, Value = 4)]
             DETOUR = 4,
 
-            [ProtoEnum(Name = @"ADDITIONAL_SERVICE", Value = 5)]
+            [ProtoEnum(Name = @"ADDITIONAL_SERVICE")]//, Value = 5)]
             ADDITIONAL_SERVICE = 5,
 
-            [ProtoEnum(Name = @"MODIFIED_SERVICE", Value = 6)]
+            [ProtoEnum(Name = @"MODIFIED_SERVICE")]//, Value = 6)]
             MODIFIED_SERVICE = 6,
 
-            [ProtoEnum(Name = @"OTHER_EFFECT", Value = 7)]
+            [ProtoEnum(Name = @"OTHER_EFFECT")]//, Value = 7)]
             OTHER_EFFECT = 7,
 
-            [ProtoEnum(Name = @"UNKNOWN_EFFECT", Value = 8)]
+            [ProtoEnum(Name = @"UNKNOWN_EFFECT")]//, Value = 8)]
             UNKNOWN_EFFECT = 8,
 
-            [ProtoEnum(Name = @"STOP_MOVED", Value = 9)]
+            [ProtoEnum(Name = @"STOP_MOVED")]//, Value = 9)]
             STOP_MOVED = 9
         }
 

@@ -1,4 +1,5 @@
 ﻿using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
 
 using log4net;
@@ -15,13 +16,20 @@ namespace gtfsrt_events_tu_latest_prediction
                 connection.Open();
                 
                 const string query1 = @"INSERT INTO dbo.event_rt_trip_archive SELECT * FROM dbo.event_rt_trip";
-                var cmd = new SqlCommand
+                var cmd = new SqlCommand()
                           {
                               Connection = connection,
-                              CommandText = query1,
-                              CommandTimeout = 300
+                              CommandText = "EventRTTripArchive",
+                              CommandType = CommandType.StoredProcedure,
+                              CommandTimeout = 600
                           };
-                var rowsInserted = cmd.ExecuteNonQuery();
+
+                var returnParameter = cmd.Parameters.Add("@ReturnVal", SqlDbType.Int);
+                returnParameter.Direction = ParameterDirection.ReturnValue;
+                cmd.ExecuteNonQuery();
+                var rowsInserted = returnParameter.Value;
+
+                /*var rowsInserted = cmd.ExecuteNonQuery();
                 var rowsDeleted = -2;
 
                 if (rowsInserted > 0)
@@ -29,11 +37,11 @@ namespace gtfsrt_events_tu_latest_prediction
                     const string query2 = "DELETE FROM dbo.event_rt_trip";
                     cmd.CommandText = query2;
                     //cmd.CommandTimeout = 30;
-                    rowsDeleted = cmd.ExecuteNonQuery();
+                    //rowsDeleted = cmd.ExecuteNonQuery();
                 }
 
                 if (rowsInserted != rowsDeleted)
-                    return false;
+                    return false;*/
 
                 Log.Debug("Moved " + rowsInserted + " events into archive table.");
                 Log.Debug("Archiving successful");

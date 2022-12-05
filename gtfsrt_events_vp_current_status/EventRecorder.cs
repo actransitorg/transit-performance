@@ -7,11 +7,13 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 
-using GtfsRealtimeLib;
-
 using log4net;
 
+using Newtonsoft.Json;
+
 using ProtoBuf;
+
+using TransitRealtime;
 
 namespace gtfsrt_events_vp_current_status
 {
@@ -65,7 +67,7 @@ namespace gtfsrt_events_vp_current_status
              * Check the file time stamp, if it is same as previous one,
              * do not process any further as there is no update
              */
-            var currentFileTimestamp = feedMessages.header.timestamp;
+            var currentFileTimestamp = feedMessages.Header.Timestamp;
 
             Log.Info("currentFileTimestamp: " + currentFileTimestamp + " previousFileTimestamp: " + previousFileTimestamp);
 
@@ -206,8 +208,9 @@ namespace gtfsrt_events_vp_current_status
 
         private void GenerateDepartureEvent(Dictionary<VehicleEntity, Entity> EphemeralEntitySet, VehicleEntity vehicleEntity)
         {
+            DateTime serviceDate = DateTime.Now;
             var startDate = EternalEntitySet[vehicleEntity].startDate;
-            var serviceDate = DateTime.ParseExact(startDate, "yyyyMMdd", CultureInfo.InvariantCulture);
+            //var serviceDate = DateTime.ParseExact(startDate, "yyyyMMdd", CultureInfo.InvariantCulture);
             var routeId = EphemeralEntitySet[vehicleEntity].routeId;
             var tripId = EphemeralEntitySet[vehicleEntity].tripId;
             var stopId = EternalEntitySet[vehicleEntity].stopId;
@@ -310,9 +313,9 @@ namespace gtfsrt_events_vp_current_status
 
         private void GenerateArrivalEvent(VehicleEntity vehicleEntity)
         {
-            //DateTime serviceDate = DateTime.Now;
+            DateTime serviceDate = DateTime.Now;
             var startDate = EternalEntitySet[vehicleEntity].startDate;
-            var serviceDate = DateTime.ParseExact(startDate, "yyyyMMdd", CultureInfo.InvariantCulture);
+            //var serviceDate = DateTime.ParseExact(startDate, "yyyyMMdd", CultureInfo.InvariantCulture);
             var routeId = EternalEntitySet[vehicleEntity].routeId;
             var tripId = EternalEntitySet[vehicleEntity].tripId;
             var stopId = EternalEntitySet[vehicleEntity].stopId;

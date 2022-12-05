@@ -4,7 +4,7 @@ using System.Net;
 using System.Reflection;
 using System.Threading;
 
-using GtfsRealtimeLib;
+using TransitRealtime;
 
 using IBI.DataAccess.Models;
 
@@ -33,7 +33,7 @@ namespace gtfsrt_alerts
 
                 Thread.Sleep(1000);
 
-                var data = new GtfsData(Log);
+                var data = new GtfsRealtimeLib.GtfsData(Log);
                 data.NewFeedMessage += Data_NewFeedMessage;
 
                 var feedMessageThread = new Thread(data.GetData);

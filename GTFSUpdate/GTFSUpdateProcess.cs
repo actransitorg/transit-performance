@@ -87,6 +87,10 @@ namespace GTFS
             var GTFSPath = ConfigurationManager.AppSettings["GTFSPath"];
 
             var columnList = GetColumnList(GTFSPath + "/" + fileName + ".txt");
+            if (fileName == "routes")
+            {
+                columnList.Insert(1, "agency_id");
+            }
 
             Log.Info(datatable.TableName);
 
@@ -98,6 +102,11 @@ namespace GTFS
                 {
                     var line = sr.ReadLine();
                     var dataRowValues = ParseLine(line);
+                    if (fileName == "routes")
+                    {
+                        dataRowValues.Insert(1, "1");
+                    }
+
                     AddDataRow(columnList, datatable, dataRowValues);
                     batchSize++;
                     if (batchSize == 10000)

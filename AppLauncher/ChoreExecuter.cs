@@ -29,40 +29,48 @@ namespace AppLauncher
 
         private static void StoredProcedureTask(Task task)
         {
-            string connectionString = _databaseConfiguration.GetConnectionString();
-            using (var conn = new SqlConnection(connectionString))
-            using (var command = new SqlCommand(task.name, conn)
+            try
             {
-                CommandType = CommandType.StoredProcedure
-            })
-            {
-                command.CommandTimeout = 7200;
-                if (task.arguments != null && task.arguments.Count > 0)
+                string connectionString = _databaseConfiguration.GetConnectionString();
+                using (var conn = new SqlConnection(connectionString))
+                using (var command = new SqlCommand(task.name, conn)
                 {
-                    foreach (var argument in task.arguments)
+                    CommandType = CommandType.StoredProcedure
+                })
+                {
+                    command.CommandTimeout = 7200;
+                    if (task.arguments != null && task.arguments.Count > 0)
                     {
-                        SqlParameter parameter = new SqlParameter();
-                        parameter.ParameterName = argument.name;
-                        parameter.SqlDbType = GetDbType(argument.datatype);
-                        if (argument.datatype.Equals(DataType.Date) || argument.datatype.Equals(DataType.DateTime))
+                        foreach (var argument in task.arguments)
                         {
-                            GetParameterValue(parameter,argument);
-                        }
-                        else
-                        {
-                            parameter.Value = argument.value;
-                        }
-                        parameter.Direction = ParameterDirection.Input;
-                       
+                            SqlParameter parameter = new SqlParameter();
+                            parameter.ParameterName = argument.name;
+                            parameter.SqlDbType = GetDbType(argument.datatype);
+                            if (argument.datatype.Equals(DataType.Date) || argument.datatype.Equals(DataType.DateTime))
+                            {
+                                GetParameterValue(parameter, argument);
+                            }
+                            else
+                            {
+                                parameter.Value = argument.value;
+                            }
+                            parameter.Direction = ParameterDirection.Input;
 
-                        // Add the parameter to the Parameters collection. 
-                        command.Parameters.Add(value: parameter);   
+
+                            // Add the parameter to the Parameters collection. 
+                            command.Parameters.Add(value: parameter);
+                        }
                     }
+                    conn.Open();
+                    command.ExecuteNonQuery();
+                    conn.Close();
                 }
-                conn.Open();
-                command.ExecuteNonQuery();
-                conn.Close();
             }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            
         }
 
         private static void GetParameterValue(SqlParameter parameter, Argument argument)

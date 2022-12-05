@@ -45,6 +45,11 @@ BEGIN
 		DELETE FROM dbo.gtfsrt_vehicleposition_denormalized
 		WHERE header_timestamp < (@service_date_epoch - @number_of_days_process*86400)
 
+	IF OBJECT_ID ('dbo.rt_event','U') IS NOT NULL
+
+		DELETE FROM dbo.rt_event
+		WHERE header_timestamp < (@service_date_epoch - @number_of_days_process*86400)
+
 END
 
 GO

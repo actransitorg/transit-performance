@@ -1,4 +1,5 @@
 ﻿using System;
+using log4net;
 
 namespace gtfsrt_events_tu_latest_prediction
 {
@@ -29,16 +30,16 @@ namespace gtfsrt_events_tu_latest_prediction
             var item = obj as EntityIdentifier;
             if (item == null)
                 return false;
-
+            
             // Null check for trip id.
             // Ideally this condition never happens. In case it happens return false
             if (string.IsNullOrEmpty(TripId) || string.IsNullOrEmpty(item.TripId))
                 return false;
 
             return TripId.Equals(item.TripId)
-                   && StopSequence == item.StopSequence
-                   && item.ServiceDate.Equals(ServiceDate)
-                   && EventType.Equals(item.EventType);
+                     && StopSequence == item.StopSequence
+                     && item.ServiceDate.ToShortDateString().Equals(ServiceDate.ToShortDateString())
+                     && EventType.Equals(item.EventType);
         }
 
         /*

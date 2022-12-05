@@ -14,6 +14,10 @@ namespace IBI.DataAccess.DataSets
 {
     partial class AlertsDataSet
     {
+        partial class rt_alert_tempDataTable
+        {
+        }
+
         internal static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         public static readonly string PERIOD_END_CHANGE_SECONDS = ConfigurationManager.AppSettings["PERIOD_END_CHANGE_SECONDS"];
 
@@ -142,7 +146,7 @@ namespace IBI.DataAccess.DataSets
             {
                 connection.Open();
 
-                var alertsTableAdapter = new rt_alertTableAdapter { Connection = connection, ClearBeforeFill = true};
+                var alertsTableAdapter = new rt_alertTableAdapter { Connection = connection, ClearBeforeFill = true };
                 var activePeriodsTableAdapter = new rt_alert_active_periodTableAdapter { Connection = connection, ClearBeforeFill = true };
                 var informedEntitiesTableAdapter = new rt_alert_informed_entityTableAdapter { Connection = connection, ClearBeforeFill = true };
 
@@ -307,9 +311,9 @@ namespace IBI.DataAccess.DataSets
                 var fileTime = alerts.FirstOrDefault()?.HeaderTimestamp ?? Utils.GetSecondsFromUtc(currentTime);
 
                 var alertsToClose = rt_alert.Where(x => !currentAlertIds.Contains(x.alert_id)).OrderBy(x => x.alert_id).ToList();
-                var closedAlertsDataTable = new rt_alertDataTable { TableName = rt_alert_temp.TableName };
-                var closedActivePeriodsDataTable = new rt_alert_active_periodDataTable { TableName = rt_alert_active_period_temp.TableName };
-                var closedInformedEntitiesDataTable = new rt_alert_informed_entityDataTable { TableName = rt_alert_informed_entity_temp.TableName };
+                var closedAlertsDataTable = new rt_alertDataTable { TableName = rt_alert.TableName };
+                var closedActivePeriodsDataTable = new rt_alert_active_periodDataTable { TableName = rt_alert_active_period.TableName };
+                var closedInformedEntitiesDataTable = new rt_alert_informed_entityDataTable { TableName = rt_alert_informed_entity.TableName };
 
                 moreToClose = Math.Max(alertsToClose.Count - closeMax, 0);
 
@@ -344,6 +348,7 @@ namespace IBI.DataAccess.DataSets
 
                 using (var transaction = connection.BeginTransaction())
                 {
+
                     using (var sqlBulkCopy = new SqlBulkCopy(connection, SqlBulkCopyOptions.KeepIdentity, transaction))
                     {
                         Utils.BulkInsert(closedAlertsDataTable, sqlBulkCopy, new List<string> { "record_id" });

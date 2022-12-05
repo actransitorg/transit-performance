@@ -14,7 +14,7 @@ namespace gtfsrt_events_vp_current_status
         private readonly EventQueue eventQueue;
         private readonly ILog Log;
         private readonly string sqlConnectionString = ConfigurationManager.ConnectionStrings["DatabaseConnectionString"].ToString();
-
+        
         internal void ThreadRun()
         {
             while (true)

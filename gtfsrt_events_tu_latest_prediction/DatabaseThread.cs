@@ -75,8 +75,9 @@ namespace gtfsrt_events_tu_latest_prediction
             }
             if (EventTable == null)
                 return;
-
+            
             EventTable.Clear();
+            
             AddRows(insertEventList);
             Log.Debug("Trying to insert " + insertEventList.Count + " rows in database.");
 
@@ -92,7 +93,7 @@ namespace gtfsrt_events_tu_latest_prediction
                     }
                     sbc.WriteToServer(EventTable);
                     connection.Close();
-                    Log.Debug("Inserted  " + EventTable.Rows.Count + " rows in database.");
+                    Log.Debug("Inserted  " + EventTable.Rows.Count + " rows in  a table: " + sbc.DestinationTableName);
                 }
             }
         }
@@ -117,6 +118,7 @@ namespace gtfsrt_events_tu_latest_prediction
 
                 EventTable.Rows.Add(eventRow);
             }
+            Log.Debug("Add Rows");
                 var withLabels = EventTable.Rows.Cast<DataRow>().Count(x => !x.IsNull("vehicle_label"));
         }
 
@@ -153,6 +155,7 @@ namespace gtfsrt_events_tu_latest_prediction
 
         private void DeleteRows(List<Event> updateEventList)
         {
+            Log.Debug("inside delete rows");
             var deleteList = GetDeleteList(updateEventList);
             using (var connection = new SqlConnection(SqlConnectionString))
             {
